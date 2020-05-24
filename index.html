@@ -259,6 +259,162 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/24/lodash-md/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Charles Ye">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Charles Ye's blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/05/24/lodash-md/" itemprop="url">lodash源码解读系列(1).md</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-05-24T16:12:42+08:00">
+                2020-05-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Lodash的类型检测"><a href="#Lodash的类型检测" class="headerlink" title="Lodash的类型检测"></a>Lodash的类型检测</h2><p> js是一种弱类型动态语言，很多时候为了代码的健壮性，必须对变量进行类型检查。查看 Lodash 源码这样的检查比比皆是，因此希望进行一番整理。</p>
+<h3 id="JavaScript的类型系统"><a href="#JavaScript的类型系统" class="headerlink" title="JavaScript的类型系统"></a>JavaScript的类型系统</h3><p> JavaScript的类型有两类: 原始数据类型(Primitive Data Type)以及引用数据类型(Reference Data Type):</p>
+<h4 id="原始数据类型"><a href="#原始数据类型" class="headerlink" title="原始数据类型"></a>原始数据类型</h4><ul>
+<li>undefined/null</li>
+<li>boolean</li>
+<li>number<ul>
+<li>NaN</li>
+<li>Infinite</li>
+<li>数值</li>
+</ul>
+</li>
+<li>string</li>
+<li>symbol</li>
+<li>bigint </li>
+</ul>
+<p>其中bigint是ES2020新引入类型，用于表示任意精度的整数值</p>
+<h4 id="引用数据类型"><a href="#引用数据类型" class="headerlink" title="引用数据类型"></a>引用数据类型</h4><ul>
+<li>Object<ul>
+<li>Array</li>
+<li>Function</li>
+<li>Date</li>
+<li>Error</li>
+<li>Set</li>
+<li>Map</li>
+<li>WeakSet</li>
+<li>WeakMap</li>
+</ul>
+</li>
+</ul>
+<h3 id="Number类检测"><a href="#Number类检测" class="headerlink" title="Number类检测"></a>Number类检测</h3><h4 id="isNumber"><a href="#isNumber" class="headerlink" title="isNumber"></a>isNumber</h4><p>源码</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">isNumber</span>(<span class="params">value</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">typeof</span> value === <span class="string">'number'</span> ||</span><br><span class="line">    (isObjectLike(value) &amp;&amp; getTag(value) == <span class="string">'[object Number]'</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>解读:</p>
+<p>此处除了考虑value为数值外，还有可能是 Number 对象。<br><code>isObjectLike</code>用于判断 value 为非 null 的对象，getTag函数调用了 Object.prototype.toString 来获取内部 <code>[[class]]</code> 属性,进而判断对象的类型</p>
+<h4 id="isObject"><a href="#isObject" class="headerlink" title="isObject"></a>isObject</h4><p>源码</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">isObject</span>(<span class="params">value</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> type = <span class="keyword">typeof</span> value</span><br><span class="line">  <span class="keyword">return</span> value != <span class="literal">null</span> &amp;&amp; (type === <span class="string">'object'</span> || type === <span class="string">'function'</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>解读:</p>
+<p>此处判断变量是否为 object 时，Lodash 将特殊值 null 排除在外，同时注意保留 typeof 为 function 的情况。 </p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/09/Charles-Ye-s-Blog/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -543,7 +699,7 @@
               
                 <a href="/archives/%20%7C%7C%20archive">
               
-                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -551,6 +707,15 @@
 
             
 
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">1</span>
+                  <span class="site-state-item-name">tags</span>
+                
+              </div>
             
 
           </nav>

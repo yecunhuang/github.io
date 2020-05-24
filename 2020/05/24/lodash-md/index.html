@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="lodash js," />
 
 
 
@@ -79,14 +79,17 @@
 
 
 
+<meta name="description" content="Lodash的类型检测 js是一种弱类型动态语言，很多时候为了代码的健壮性，必须对变量进行类型检查。查看 Lodash 源码这样的检查比比皆是，因此希望进行一番整理。 JavaScript的类型系统 JavaScript的类型有两类: 原始数据类型(Primitive Data Type)以及引用数据类型(Reference Data Type): 原始数据类型 undefined&#x2F;null bo">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Charles Ye&#39;s Blog">
-<meta property="og:url" content="http://yoursite.com/2020/04/09/Charles-Ye-s-Blog/index.html">
+<meta property="og:title" content="lodash源码解读系列(1).md">
+<meta property="og:url" content="http://yoursite.com/2020/05/24/lodash-md/index.html">
 <meta property="og:site_name" content="Charles Ye&#39;s blog">
+<meta property="og:description" content="Lodash的类型检测 js是一种弱类型动态语言，很多时候为了代码的健壮性，必须对变量进行类型检查。查看 Lodash 源码这样的检查比比皆是，因此希望进行一番整理。 JavaScript的类型系统 JavaScript的类型有两类: 原始数据类型(Primitive Data Type)以及引用数据类型(Reference Data Type): 原始数据类型 undefined&#x2F;null bo">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2020-04-09T14:44:32.000Z">
-<meta property="article:modified_time" content="2020-04-09T14:44:32.036Z">
+<meta property="article:published_time" content="2020-05-24T08:12:42.000Z">
+<meta property="article:modified_time" content="2020-05-24T08:16:14.606Z">
 <meta property="article:author" content="Charles Ye">
+<meta property="article:tag" content="lodash js">
 <meta name="twitter:card" content="summary">
 
 
@@ -117,13 +120,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2020/04/09/Charles-Ye-s-Blog/"/>
+  <link rel="canonical" href="http://yoursite.com/2020/05/24/lodash-md/"/>
 
 
 
 
 
-  <title>Charles Ye's Blog | Charles Ye's blog</title>
+  <title>lodash源码解读系列(1).md | Charles Ye's blog</title>
   
 
 
@@ -260,7 +263,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/09/Charles-Ye-s-Blog/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/24/lodash-md/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Charles Ye">
@@ -277,7 +280,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Charles Ye's Blog</h1>
+          <h1 class="post-title" itemprop="name headline">lodash源码解读系列(1).md</h1>
         
 
         <div class="post-meta">
@@ -289,8 +292,8 @@
               
                 <span class="post-meta-item-text">Posted on</span>
               
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-04-09T22:44:32+08:00">
-                2020-04-09
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-05-24T16:12:42+08:00">
+                2020-05-24
               </time>
             
 
@@ -327,7 +330,44 @@
       
 
       
-        
+        <h2 id="Lodash的类型检测"><a href="#Lodash的类型检测" class="headerlink" title="Lodash的类型检测"></a>Lodash的类型检测</h2><p> js是一种弱类型动态语言，很多时候为了代码的健壮性，必须对变量进行类型检查。查看 Lodash 源码这样的检查比比皆是，因此希望进行一番整理。</p>
+<h3 id="JavaScript的类型系统"><a href="#JavaScript的类型系统" class="headerlink" title="JavaScript的类型系统"></a>JavaScript的类型系统</h3><p> JavaScript的类型有两类: 原始数据类型(Primitive Data Type)以及引用数据类型(Reference Data Type):</p>
+<h4 id="原始数据类型"><a href="#原始数据类型" class="headerlink" title="原始数据类型"></a>原始数据类型</h4><ul>
+<li>undefined/null</li>
+<li>boolean</li>
+<li>number<ul>
+<li>NaN</li>
+<li>Infinite</li>
+<li>数值</li>
+</ul>
+</li>
+<li>string</li>
+<li>symbol</li>
+<li>bigint </li>
+</ul>
+<p>其中bigint是ES2020新引入类型，用于表示任意精度的整数值</p>
+<h4 id="引用数据类型"><a href="#引用数据类型" class="headerlink" title="引用数据类型"></a>引用数据类型</h4><ul>
+<li>Object<ul>
+<li>Array</li>
+<li>Function</li>
+<li>Date</li>
+<li>Error</li>
+<li>Set</li>
+<li>Map</li>
+<li>WeakSet</li>
+<li>WeakMap</li>
+</ul>
+</li>
+</ul>
+<h3 id="Number类检测"><a href="#Number类检测" class="headerlink" title="Number类检测"></a>Number类检测</h3><h4 id="isNumber"><a href="#isNumber" class="headerlink" title="isNumber"></a>isNumber</h4><p>源码</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">isNumber</span>(<span class="params">value</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">typeof</span> value === <span class="string">'number'</span> ||</span><br><span class="line">    (isObjectLike(value) &amp;&amp; getTag(value) == <span class="string">'[object Number]'</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>解读:</p>
+<p>此处除了考虑value为数值外，还有可能是 Number 对象。<br><code>isObjectLike</code>用于判断 value 为非 null 的对象，getTag函数调用了 Object.prototype.toString 来获取内部 <code>[[class]]</code> 属性,进而判断对象的类型</p>
+<h4 id="isObject"><a href="#isObject" class="headerlink" title="isObject"></a>isObject</h4><p>源码</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">isObject</span>(<span class="params">value</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> type = <span class="keyword">typeof</span> value</span><br><span class="line">  <span class="keyword">return</span> value != <span class="literal">null</span> &amp;&amp; (type === <span class="string">'object'</span> || type === <span class="string">'function'</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>解读:</p>
+<p>此处判断变量是否为 object 时，Lodash 将特殊值 null 排除在外，同时注意保留 typeof 为 function 的情况。 </p>
+
       
     </div>
     
@@ -342,6 +382,12 @@
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/lodash-js/" rel="tag"># lodash js</a>
+          
+        </div>
+      
 
       
       
@@ -351,8 +397,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/04/09/hello-world/" rel="next" title="Hello World">
-                <i class="fa fa-chevron-left"></i> Hello World
+              <a href="/2020/04/09/Charles-Ye-s-Blog/" rel="next" title="Charles Ye's Blog">
+                <i class="fa fa-chevron-left"></i> Charles Ye's Blog
               </a>
             
           </div>
@@ -360,10 +406,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2020/05/24/lodash-md/" rel="prev" title="lodash源码解读系列(1).md">
-                lodash源码解读系列(1).md <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -415,8 +457,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -467,6 +518,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Lodash的类型检测"><span class="nav-number">1.</span> <span class="nav-text">Lodash的类型检测</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JavaScript的类型系统"><span class="nav-number">1.1.</span> <span class="nav-text">JavaScript的类型系统</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#原始数据类型"><span class="nav-number">1.1.1.</span> <span class="nav-text">原始数据类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#引用数据类型"><span class="nav-number">1.1.2.</span> <span class="nav-text">引用数据类型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Number类检测"><span class="nav-number">1.2.</span> <span class="nav-text">Number类检测</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#isNumber"><span class="nav-number">1.2.1.</span> <span class="nav-text">isNumber</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#isObject"><span class="nav-number">1.2.2.</span> <span class="nav-text">isObject</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
