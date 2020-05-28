@@ -278,7 +278,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/05/24/lodash-md/" itemprop="url">lodash源码解读系列(1).md</a></h1>
+                <a class="post-title-link" href="/2020/05/24/lodash-md/" itemprop="url">lodash源码解读系列(1)</a></h1>
         
 
         <div class="post-meta">
@@ -367,6 +367,9 @@
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">isObject</span>(<span class="params">value</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> type = <span class="keyword">typeof</span> value</span><br><span class="line">  <span class="keyword">return</span> value != <span class="literal">null</span> &amp;&amp; (type === <span class="string">'object'</span> || type === <span class="string">'function'</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>解读:</p>
 <p>此处判断变量是否为 object 时，Lodash 将特殊值 null 排除在外，同时注意保留 typeof 为 function 的情况。 </p>
+<h4 id="isInteger"><a href="#isInteger" class="headerlink" title="isInteger"></a>isInteger</h4><p>源码</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">function</span> <span class="title">isInteger</span>(<span class="params">value</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">typeof</span> value == <span class="string">'number'</span> &amp;&amp; value == toInteger(value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>toInteger</code>函数可将 <code>number</code>,字符串形式的数字转换为整数，如果结果仍然和原值相等，说明此数字为整数。</p>
 
           
         
